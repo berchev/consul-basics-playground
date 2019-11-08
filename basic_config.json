@@ -1,0 +1,6 @@
+{
+    "bootstrap": false,
+    "bootstrap_expect": 3,
+    "server": true,
+    "retry_join": ["192.168.10.11", "192.168.10.21", "192.168.10.31"]
+  }
