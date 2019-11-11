@@ -27,3 +27,8 @@ which socat || {
   apt-get update
   apt-get install -y socat
 }
+
+# Install envconsul, if not installed
+which envconsul || {
+  cp /vagrant/bin/envconsul /usr/local/bin
+}

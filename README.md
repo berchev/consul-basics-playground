@@ -109,3 +109,34 @@ Success! Deleted key: redis/config/connections
 vagrant@server1:~$ 
 ```
 
+## Playing with envconsul
+- starting consul agent in dev mode
+```
+vagrant@server1:~$ consul agent -dev
+==> Starting Consul agent...
+           Version: 'v1.6.1'
+```
+- write some data:
+```
+vagrant@server1:~$ consul kv put my-app/address 1.2.3.4
+Success! Data written to: my-app/address
+vagrant@server1:~$ 
+vagrant@server1:~$ consul kv put my-app/port 80
+Success! Data written to: my-app/port
+vagrant@server1:~$ 
+vagrant@server1:~$ consul kv put my-app/max_cons 5
+Success! Data written to: my-app/max_cons
+vagrant@server1:~$ 
+```
+- Execute envconsul with a subprocess (I will use /bin/bash)
+```
+vagrant@server1:~$ envconsul -prefix my-app /bin/bash
+```
+- Envconsul will connect to Consul, read the data from the key-value store, and populate environment variables corresponding to those values
+```
+vagrant@server1:~$ env | egrep 'address|port|max_cons'
+address=1.2.3.4
+port=80
+max_cons=5
+vagrant@server1:~$
+```
