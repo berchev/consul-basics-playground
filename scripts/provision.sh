@@ -32,3 +32,8 @@ which socat || {
 which envconsul || {
   cp /vagrant/bin/envconsul /usr/local/bin
 }
+
+# Install consul-template, if not installed
+which consul-template || {
+  cp /vagrant/bin/consul-template /usr/local/bin
+}

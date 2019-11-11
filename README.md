@@ -140,3 +140,55 @@ port=80
 max_cons=5
 vagrant@server1:~$
 ```
+
+## Consul-template usage
+There are two use cases: Consul KV and Discover All Services
+
+### Consul-template to query Consul's KV store
+- start consul server in dev mode.
+```
+consul agent -dev
+```
+- execute consul-template command, which will start query the consul's KV store 
+```
+consul-template -template "find_address.tpl:hashicorp_address.txt"
+```
+- we are going to write data to the consul key:
+```
+consul kv put hashicorp/street_address "101 2nd St"
+```
+- into /vagrant directory (directory from which we have started consul-template), we need to have `hashicorp_address.txt` file. Into this file should be populated the value of the key `hashicorp/street_address`
+```
+vagrant@server1:/vagrant$ cat hashicorp_address.txt 
+101 2nd St
+vagrant@server1:/vagrant$
+```
+- we will update the `hashicorp/street_address` key and will check whether content of `hashicorp_address.txt` will be changed:
+```
+vagrant@server1:/vagrant$ consul kv put hashicorp/street_address "22b Baker ST"
+Success! Data written to: hashicorp/street_address
+vagrant@server1:/vagrant$ 
+vagrant@server1:/vagrant$ cat hashicorp_address.txt 
+22b Baker ST
+vagrant@server1:/vagrant$
+```
+#### Consul-template to Discover All Services
+- start consul server in dev mode.
+```
+consul agent -dev
+```
+- will create template file which will query all services
+```
+{{range services}}# {{.Name}}{{range service .Name}}
+{{.Address}}{{end}}
+
+{{end}}
+```
+- run consul template specifying `-once` flag. (will run the process once and then quit)
+```
+vagrant@server1:/vagrant$ consul-template -template="all-services.tpl:all-services.txt" -once
+vagrant@server1:/vagrant$ cat all-services.txt
+# consul
+127.0.0.1
+vagrant@server1:/vagrant$
+```
